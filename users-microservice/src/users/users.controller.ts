@@ -3,7 +3,12 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { USER_PATTERNS } from './utils/types';
+import {
+  PaginatedResult,
+  PaginationOptions,
+  USER_PATTERNS,
+} from './utils/types';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Controller()
 export class UsersController {
@@ -15,8 +20,10 @@ export class UsersController {
   }
 
   @MessagePattern({ cmd: USER_PATTERNS.FindAll })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(
+    @Payload() paginationParams: PaginationOptions,
+  ): Promise<PaginatedResult<UserResponseDto>> {
+    return this.usersService.findAll(paginationParams);
   }
 
   @MessagePattern({ cmd: USER_PATTERNS.FindOne })
@@ -25,8 +32,11 @@ export class UsersController {
   }
 
   @MessagePattern({ cmd: USER_PATTERNS.Update })
-  update(@Payload() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto.id, updateUserDto);
+  update(
+    @Payload()
+    { id, updateUserDto }: { id: number; updateUserDto: UpdateUserDto },
+  ) {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @MessagePattern({ cmd: USER_PATTERNS.Remove })

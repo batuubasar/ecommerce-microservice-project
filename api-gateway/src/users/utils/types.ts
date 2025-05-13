@@ -6,3 +6,11 @@ export const USER_PATTERNS = {
   Update: 'Users.Update',
   Remove: 'Users.Remove',
 };
+// SONRA GLOBALE ALINACAK
+export type SortOrder = 'asc' | 'desc';
+export type PaginationOptions = {
+  page: number;
+  limit: number;
+  sort: string;
+  order: SortOrder;
+};

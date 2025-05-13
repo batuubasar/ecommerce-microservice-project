@@ -2,7 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ClientProxy } from '@nestjs/microservices';
-import { USER_PATTERNS } from './utils/types';
+import { PaginationOptions, USER_PATTERNS } from './utils/types';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -18,8 +19,16 @@ export class UsersService {
     );
   }
 
-  findAll() {
-    return this.usersMicroservice.send({ cmd: USER_PATTERNS.FindAll }, {});
+  findAll({
+    page = 1,
+    sort = 'id',
+    order = 'ASC',
+    limit = 10,
+  }): Observable<PaginationOptions> {
+    return this.usersMicroservice.send(
+      { cmd: USER_PATTERNS.FindAll },
+      { page, sort, order, limit },
+    );
   }
 
   findOne(id: number) {

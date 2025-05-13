@@ -6,11 +6,49 @@ services:
       dockerfile: Dockerfile
     networks:
       - ecommerce-app-microservice-network
+    depends_on:
+      users-pg-db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3020"]
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  users-pg-db:
+    image: postgres:16
+    container_name: nest-user-pg-db
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${USERS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${USERS_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${USERS_POSTGRES_DB}
+    volumes:
+      - users-pg-data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-app-microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    restart: unless-stopped
+    networks:
+      - ecommerce-app-microservice-network
   
   api-gateway:
     build:
@@ -33,3 +71,7 @@ services:
 networks:
   ecommerce-app-microservice-network:
     driver: bridge
+
+volumes:
+  users-pg-data:
+  pgadmin:
