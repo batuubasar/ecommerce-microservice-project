@@ -1,0 +1,35 @@
+services:
+  
+  users-microservice:
+    build:
+      context: ./users-microservice
+      dockerfile: Dockerfile
+    networks:
+      - ecommerce-app-microservice-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3020"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    networks:
+      - ecommerce-app-microservice-network
+    depends_on:
+      users-microservice:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+networks:
+  ecommerce-app-microservice-network:
+    driver: bridge
