@@ -15,6 +15,22 @@ services:
       timeout: 5s
       retries: 5
   
+  auth-microservice:
+    build:
+      context: ./auth-microservice
+      dockerfile: Dockerfile
+    networks:
+      - ecommerce-app-microservice-network
+
+    depends_on:
+      users-microservice:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3021"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
   users-pg-db:
     image: postgres:16
     container_name: nest-user-pg-db
@@ -60,6 +76,8 @@ services:
       - ecommerce-app-microservice-network
     depends_on:
       users-microservice:
+        condition: service_healthy
+      auth-microservice:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3000"]

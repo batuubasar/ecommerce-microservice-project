@@ -1,7 +1,7 @@
 export const USER_PATTERNS = {
   FindAll: 'Users.FindAll',
   FindOne: 'Users.FindOne',
-  FindByEmail: 'Users.ByEmail',
+  FindByEmail: 'Users.FindByEmail',
   Create: 'Users.Create',
   Update: 'Users.Update',
   Remove: 'Users.Remove',

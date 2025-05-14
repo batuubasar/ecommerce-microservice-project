@@ -31,6 +31,11 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  @MessagePattern({ cmd: USER_PATTERNS.FindByEmail })
+  findByEmail(@Payload() payload: { email: string }) {
+    return this.usersService.findByEmail(payload.email);
+  }
+
   @MessagePattern({ cmd: USER_PATTERNS.Update })
   update(
     @Payload()

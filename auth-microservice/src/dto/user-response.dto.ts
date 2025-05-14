@@ -22,3 +22,12 @@ export class UserResponseDto {
     Object.assign(this, partial);
   }
 }
+
+export class UserDto {
+  id: number;
+  name: string;
+  email: string;
+  birthdate: Date;
+  role: UserRole;
+  password: string;
+}
