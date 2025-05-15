@@ -47,6 +47,23 @@ services:
       retries: 5
     env_file:
       - ./orders-microservice/.env
+    
+  cart-microservice:
+    build:
+      context: ./cart-microservice
+      dockerfile: Dockerfile
+    networks:
+      - ecommerce-app-microservice-network
+    env_file:
+      - ./cart-microservice/.env
+    depends_on:
+      cart-mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3024"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   auth-microservice:
     build:
@@ -60,6 +77,8 @@ services:
       products-microservice:
         condition: service_healthy
       orders-microservice:
+        condition: service_healthy
+      cart-microservice:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3021"]
@@ -126,7 +145,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+  cart-mongo:
+    image: mongo
+    container_name: cart-mongo
+    restart: always
+    ports:
+      - '27017:27017'
+    volumes:
+      - cart-mongo-data:/data/db
+    networks:
+      - ecommerce-app-microservice-network
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4
@@ -159,6 +192,8 @@ services:
         condition: service_healthy
       orders-microservice:
         condition: service_healthy
+      cart-microservice:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3000"]
       interval: 10s
@@ -174,4 +209,5 @@ volumes:
   users-pg-data:
   products-pg-data:
   orders-pg-data:
+  cart-mongo-data:
   pgadmin:
