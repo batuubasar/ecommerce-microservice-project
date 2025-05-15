@@ -1,7 +1,6 @@
 export const ORDER_PATTERNS = {
   FindAll: 'Orders.FindAll',
   FindOne: 'Orders.FindOne',
-  FindBySeller: 'Orders.FindBySeller',
   Create: 'Orders.Create',
   Update: 'Orders.Update',
   Remove: 'Orders.Remove',
