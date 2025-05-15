@@ -14,6 +14,13 @@ export const PRODUCT_PATTERNS = {
   Update: 'Products.Update',
   Remove: 'Products.Remove',
 };
+export const ORDER_PATTERNS = {
+  FindAll: 'Orders.FindAll',
+  FindOne: 'Orders.FindOne',
+  Create: 'Orders.Create',
+  Update: 'Orders.Update',
+  Remove: 'Orders.Remove',
+};
 export type SortOrder = 'asc' | 'desc';
 export type PaginationOptions = {
   page: number;

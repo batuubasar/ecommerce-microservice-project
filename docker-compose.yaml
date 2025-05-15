@@ -30,6 +30,23 @@ services:
       retries: 5
     env_file:
       - ./products-microservice/.env
+  
+  orders-microservice:
+    build:
+      context: ./orders-microservice
+      dockerfile: Dockerfile
+    networks:
+      - ecommerce-app-microservice-network
+    depends_on:
+      orders-pg-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3023"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./orders-microservice/.env
 
   auth-microservice:
     build:
@@ -37,11 +54,12 @@ services:
       dockerfile: Dockerfile
     networks:
       - ecommerce-app-microservice-network
-
     depends_on:
       users-microservice:
         condition: service_healthy
       products-microservice:
+        condition: service_healthy
+      orders-microservice:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3021"]
@@ -89,6 +107,26 @@ services:
       timeout: 5s
       retries: 5
 
+  orders-pg-db:
+    image: postgres:16
+    container_name: nest-orders-pg-db
+    restart: always
+    ports:
+      - '5434:5432'
+    environment:
+      POSTGRES_USER: ${ORDERS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${ORDERS_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${ORDERS_POSTGRES_DB}
+    volumes:
+      - orders-pg-data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-app-microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4
@@ -119,6 +157,8 @@ services:
         condition: service_healthy
       auth-microservice:
         condition: service_healthy
+      orders-microservice:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3000"]
       interval: 10s
@@ -133,4 +173,5 @@ networks:
 volumes:
   users-pg-data:
   products-pg-data:
+  orders-pg-data:
   pgadmin:

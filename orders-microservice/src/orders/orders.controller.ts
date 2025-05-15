@@ -25,7 +25,7 @@ export class OrdersController {
   }
 
   @MessagePattern({ cmd: ORDER_PATTERNS.Update })
-  update(@Payload() payload: { id: number; updateProductDto: UpdateOrderDto }) {
+  update(@Payload() payload: { id: number; updateOrderDto: UpdateOrderDto }) {
     return this.ordersService.update(payload.id, payload.updateOrderDto);
   }
 

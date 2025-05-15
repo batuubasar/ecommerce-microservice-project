@@ -1,26 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { ORDER_PATTERNS, PaginationOptions } from 'src/common/utils/types';
 
 @Injectable()
 export class OrdersService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  constructor(
+    @Inject('ORDERS_MICROSERVICE')
+    private readonly ordersMicroservice: ClientProxy,
+  ) {}
+
+  create(dto: CreateOrderDto) {
+    return this.ordersMicroservice.send({ cmd: ORDER_PATTERNS.Create }, dto);
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  findAll(pagination: PaginationOptions) {
+    return this.ordersMicroservice.send(
+      { cmd: ORDER_PATTERNS.FindAll },
+      pagination,
+    );
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} order`;
+    return this.ordersMicroservice.send({ cmd: ORDER_PATTERNS.FindOne }, id);
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  update(id: number, dto: UpdateOrderDto) {
+    return this.ordersMicroservice.send(
+      { cmd: ORDER_PATTERNS.Update },
+      { id, updateOrderDto: dto },
+    );
   }
 
   remove(id: number) {
-    return `This action removes a #${id} order`;
+    return this.ordersMicroservice.send({ cmd: ORDER_PATTERNS.Remove }, id);
   }
 }

@@ -27,6 +27,7 @@ export class Order {
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
     onDelete: 'CASCADE',
+    eager: true,
   })
   items: OrderItem[];
 

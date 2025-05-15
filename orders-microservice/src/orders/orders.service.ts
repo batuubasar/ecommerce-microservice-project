@@ -7,7 +7,7 @@ import { Order } from './entities/Order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { OrderResponseDto } from './dto/order-response.dto';
 import { plainToInstance } from 'class-transformer';
-import { PaginatedResult, PaginationOptions } from 'utils/types';
+import { PaginatedResult, PaginationOptions, SortOrder } from 'utils/types';
 
 @Injectable()
 export class OrdersService {
@@ -41,25 +41,33 @@ export class OrdersService {
   }
 
   async findAll(
-    params: PaginationOptions,
+    params: PaginationOptions = {} as PaginationOptions,
   ): Promise<PaginatedResult<OrderResponseDto>> {
+    const page = Number(params.page) || 1;
+    const limit = Number(params.limit) || 10;
+    const sort = params.sort || 'id';
+    const order = (params.order || 'ASC').toUpperCase() as SortOrder;
     const [orders, total] = await this.orderRepository.findAndCount({
-      skip: (params.page - 1) * params.limit,
-      take: params.limit,
-      order: { [params.sort || 'id']: params.order || 'ASC' },
+      relations: ['items'],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { [sort]: order },
     });
     return {
       data: plainToInstance(OrderResponseDto, orders, {
         excludeExtraneousValues: true,
       }),
       total,
-      page: params.page,
-      limit: params.limit,
+      page,
+      limit,
     };
   }
 
   async findOne(id: number): Promise<OrderResponseDto> {
-    const order = await this.orderRepository.findOne({ where: { id } });
+    const order = await this.orderRepository.findOne({
+      where: { id },
+      relations: ['items'],
+    });
     if (!order) throw new NotFoundException(`Order ${id} not found`);
     return plainToInstance(OrderResponseDto, order, {
       excludeExtraneousValues: true,
@@ -90,7 +98,11 @@ export class OrdersService {
     }
 
     const updated = await this.orderRepository.save(order);
-    return plainToInstance(OrderResponseDto, updated, {
+    const result = await this.orderRepository.findOne({
+      where: { id: updated.id },
+      relations: ['items'],
+    });
+    return plainToInstance(OrderResponseDto, result, {
       excludeExtraneousValues: true,
     });
   }
