@@ -1,9 +1,26 @@
-import { Column, Entity } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { UserRole } from '../utils/types';
-import { BaseEntityWithName } from './BaseEntityWithName';
 
 @Entity('users')
-export class User extends BaseEntityWithName {
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  updatedAt: Date;
+
+  @Column({ type: 'varchar', length: 150, unique: false })
+  name: string;
+
   @Column({ type: 'varchar', length: 150, unique: true })
   email: string;
 
@@ -20,7 +37,6 @@ export class User extends BaseEntityWithName {
   role: UserRole;
 
   constructor(dto: Partial<User>) {
-    super();
     Object.assign(this, { ...dto });
   }
 }

@@ -9,7 +9,9 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  constructor(@Inject('AUTH_SERVICE') private authMicroservice: ClientProxy) {}
+  constructor(
+    @Inject('AUTH_MICROSERVICE') private authMicroservice: ClientProxy,
+  ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
     const authHeader = req.headers.authorization;
