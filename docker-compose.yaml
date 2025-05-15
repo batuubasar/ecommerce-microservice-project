@@ -14,7 +14,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  
+  products-microservice:
+    build:
+      context: ./products-microservice
+      dockerfile: Dockerfile
+    networks:
+      - ecommerce-app-microservice-network
+    depends_on:
+      products-pg-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3022"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./products-microservice/.env
+
   auth-microservice:
     build:
       context: ./auth-microservice
@@ -24,6 +40,8 @@ services:
 
     depends_on:
       users-microservice:
+        condition: service_healthy
+      products-microservice:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3021"]
@@ -43,6 +61,26 @@ services:
       POSTGRES_DB: ${USERS_POSTGRES_DB}
     volumes:
       - users-pg-data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-app-microservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  products-pg-db:
+    image: postgres:16
+    container_name: nest-products-pg-db
+    restart: always
+    ports:
+      - '5433:5432' 
+    environment:
+      POSTGRES_USER: ${PRODUCTS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${PRODUCTS_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PRODUCTS_POSTGRES_DB}
+    volumes:
+      - products-pg-data:/var/lib/postgresql/data
     networks:
       - ecommerce-app-microservice-network
     healthcheck:
@@ -77,6 +115,8 @@ services:
     depends_on:
       users-microservice:
         condition: service_healthy
+      products-microservice:
+        condition: service_healthy
       auth-microservice:
         condition: service_healthy
     healthcheck:
@@ -92,4 +132,5 @@ networks:
 
 volumes:
   users-pg-data:
+  products-pg-data:
   pgadmin:

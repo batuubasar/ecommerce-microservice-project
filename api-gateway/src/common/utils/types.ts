@@ -6,6 +6,14 @@ export const USER_PATTERNS = {
   Update: 'Users.Update',
   Remove: 'Users.Remove',
 };
+export const PRODUCT_PATTERNS = {
+  FindAll: 'Products.FindAll',
+  FindOne: 'Products.FindOne',
+  FindBySeller: 'Products.FindBySeller',
+  Create: 'Products.Create',
+  Update: 'Products.Update',
+  Remove: 'Products.Remove',
+};
 export type SortOrder = 'asc' | 'desc';
 export type PaginationOptions = {
   page: number;

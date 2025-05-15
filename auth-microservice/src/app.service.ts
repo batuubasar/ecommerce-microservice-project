@@ -5,6 +5,7 @@ import { JwtPayload } from './utils/types';
 import { ClientProxy } from '@nestjs/microservices';
 import { LoginDto } from './dto/login.dto';
 import { firstValueFrom } from 'rxjs';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AppService {
@@ -32,8 +33,9 @@ export class AppService {
   async login(loginDto: LoginDto) {
     try {
       const user = await this.validateUser(loginDto.email, loginDto.password);
-      const responseUser = new UserResponseDto(user);
-
+      const responseUser = plainToInstance(UserResponseDto, user, {
+        excludeExtraneousValues: true,
+      });
       const payload: JwtPayload = {
         email: user.email,
         sub: user.id,
