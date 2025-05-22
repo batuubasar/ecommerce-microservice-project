@@ -11,13 +11,16 @@ import {
   Put,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { PaginationOptions, UserRole } from 'src/common/utils/types';
 import { CapitalizeNamePipe } from 'src/common/pipes/capitalize-name.pipe';
+import {
+  CreateProductDto,
+  PaginationOptions,
+  UpdateProductDto,
+  UserRole,
+} from '@ecommerce/types';
 
 @Controller('products')
 export class ProductsController {

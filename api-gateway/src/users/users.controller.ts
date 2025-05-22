@@ -10,14 +10,17 @@ import {
   Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginationOptions, UserRole } from '../common/utils/types';
 import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { CapitalizeNamePipe } from 'src/common/pipes/capitalize-name.pipe';
 import { OwnerOrRolesGuard } from 'src/common/guards/owner-or-roles.guard';
+import {
+  CreateUserDto,
+  PaginationOptions,
+  UpdateUserDto,
+  UserRole,
+} from '@ecommerce/types';
 
 @Controller('users')
 export class UsersController {

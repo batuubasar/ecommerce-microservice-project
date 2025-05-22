@@ -1,13 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
-import { ProductResponseDto } from './dto/product-response.dto';
 import { ProductImage } from './entities/product-image.entity';
-import { plainToInstance } from 'class-transformer';
-import { PaginatedResult, PaginationOptions, SortOrder } from './utils/types';
+import {
+  CreateProductDto,
+  PaginatedResult,
+  PaginationOptions,
+  ProductResponseDto,
+  SortOrder,
+  UpdateProductDto,
+} from '@ecommerce/types';
 
 @Injectable()
 export class ProductsService {
@@ -30,9 +33,7 @@ export class ProductsService {
 
     const saved = await this.productRepository.save(product);
 
-    return plainToInstance(ProductResponseDto, saved, {
-      excludeExtraneousValues: true,
-    });
+    return saved.toResponseDto();
   }
 
   async findAll(
@@ -46,9 +47,7 @@ export class ProductsService {
       take: limit,
     });
 
-    const data = plainToInstance(ProductResponseDto, products, {
-      excludeExtraneousValues: true,
-    });
+    const data = products.map((p) => p.toResponseDto()); // plaintoinstance hata verince
 
     return {
       data,
@@ -62,9 +61,7 @@ export class ProductsService {
     const products = await this.productRepository.find({
       where: { sellerId },
     });
-    return plainToInstance(ProductResponseDto, products, {
-      excludeExtraneousValues: true,
-    });
+    return products.map((p) => p.toResponseDto());
   }
 
   async findOne(id: number): Promise<ProductResponseDto> {
@@ -74,9 +71,7 @@ export class ProductsService {
     if (!product) {
       throw new NotFoundException(`Product with id ${id} not found`);
     }
-    return plainToInstance(ProductResponseDto, product, {
-      excludeExtraneousValues: true,
-    });
+    return product.toResponseDto();
   }
 
   async update(id: number, dto: UpdateProductDto): Promise<ProductResponseDto> {
@@ -88,9 +83,7 @@ export class ProductsService {
     const updated = Object.assign(product, dto);
     const saved = await this.productRepository.save(updated);
 
-    return plainToInstance(ProductResponseDto, saved, {
-      excludeExtraneousValues: true,
-    });
+    return saved.toResponseDto();
   }
 
   async remove(id: number): Promise<{ message: string }> {

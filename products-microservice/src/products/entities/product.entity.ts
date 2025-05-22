@@ -1,27 +1,9 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { ProductImage } from './product-image.entity';
+import { BaseEntityWithName, ProductResponseDto } from '@ecommerce/types';
 
 @Entity('products')
-export class Product {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-  updatedAt: Date;
-
-  @Column({ type: 'varchar', length: 150, unique: false })
-  name: string;
-
+export class Product extends BaseEntityWithName {
   @Column({ type: 'varchar', length: 255, unique: true })
   description: string;
 
@@ -47,6 +29,20 @@ export class Product {
   images: ProductImage[];
 
   constructor(dto: Partial<Product>) {
+    super();
     Object.assign(this, { ...dto });
+  }
+
+  toResponseDto(): ProductResponseDto {
+    return {
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      price: +this.price,
+      stock: this.stock,
+      isActive: this.isActive,
+      sellerId: this.sellerId,
+      images: this.images?.map((img) => img.toResponseDto()) ?? [],
+    };
   }
 }

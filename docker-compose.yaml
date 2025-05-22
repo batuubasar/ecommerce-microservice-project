@@ -1,27 +1,48 @@
 services:
-  
+  libs:
+    build:
+      context: ./libs
+      dockerfile: Dockerfile
+    volumes:
+      - libs-dist:/usr/src/app/dist
+      - libs-modules:/usr/src/app/node_modules
+    healthcheck:
+      test: ["CMD", "stat", "/usr/src/app/dist"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
   users-microservice:
     build:
-      context: ./users-microservice
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./users-microservice/Dockerfile
     networks:
       - ecommerce-app-microservice-network
     depends_on:
       users-pg-db:
+        condition: service_healthy
+      libs:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3020"]
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - ./users-microservice:/usr/src/app/users-microservice
+      - /usr/src/app/users-microservice/node_modules
+      - libs-dist:/usr/src/app/libs/dist
+      - libs-modules:/usr/src/app/libs/node_modules
+    restart: unless-stopped
   products-microservice:
     build:
-      context: ./products-microservice
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./products-microservice/Dockerfile
     networks:
       - ecommerce-app-microservice-network
     depends_on:
       products-pg-db:
+        condition: service_healthy
+      libs:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3022"]
@@ -30,15 +51,23 @@ services:
       retries: 5
     env_file:
       - ./products-microservice/.env
+    volumes:
+      - ./products-microservice:/usr/src/app/products-microservice
+      - /usr/src/app/products-microservice/node_modules
+      - libs-dist:/usr/src/app/libs/dist
+      - libs-modules:/usr/src/app/libs/node_modules
+    restart: unless-stopped
   
   orders-microservice:
     build:
-      context: ./orders-microservice
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./orders-microservice/Dockerfile
     networks:
       - ecommerce-app-microservice-network
     depends_on:
       orders-pg-db:
+        condition: service_healthy
+      libs:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3023"]
@@ -47,11 +76,17 @@ services:
       retries: 5
     env_file:
       - ./orders-microservice/.env
+    volumes:
+      - ./orders-microservice:/usr/src/app/orders-microservice
+      - /usr/src/app/orders-microservice/node_modules
+      - libs-dist:/usr/src/app/libs/dist
+      - libs-modules:/usr/src/app/libs/node_modules
+    restart: unless-stopped
     
   cart-microservice:
     build:
-      context: ./cart-microservice
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./cart-microservice/Dockerfile
     networks:
       - ecommerce-app-microservice-network
     env_file:
@@ -59,16 +94,24 @@ services:
     depends_on:
       cart-mongo:
         condition: service_healthy
+      libs:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3024"]
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - ./cart-microservice:/usr/src/app/cart-microservice
+      - /usr/src/app/cart-microservice/node_modules
+      - libs-dist:/usr/src/app/libs/dist
+      - libs-modules:/usr/src/app/libs/node_modules
+    restart: unless-stopped
 
   auth-microservice:
     build:
-      context: ./auth-microservice
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./auth-microservice/Dockerfile
     networks:
       - ecommerce-app-microservice-network
     depends_on:
@@ -80,11 +123,19 @@ services:
         condition: service_healthy
       cart-microservice:
         condition: service_healthy
+      libs:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3021"]
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - ./auth-microservice:/usr/src/app/auth-microservice
+      - /usr/src/app/auth-microservice/node_modules
+      - libs-dist:/usr/src/app/libs/dist
+      - libs-modules:/usr/src/app/libs/node_modules
+    restart: unless-stopped
   
   users-pg-db:
     image: postgres:16
@@ -177,8 +228,8 @@ services:
   
   api-gateway:
     build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
     ports:
       - '3000:3000'
     networks:
@@ -194,11 +245,19 @@ services:
         condition: service_healthy
       cart-microservice:
         condition: service_healthy
+      libs:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3000"]
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - ./api-gateway:/usr/src/app/api-gateway
+      - /usr/src/app/api-gateway/node_modules
+      - libs-dist:/usr/src/app/libs/dist
+      - libs-modules:/usr/src/app/libs/node_modules
+    restart: unless-stopped
 
 
 networks:
@@ -211,3 +270,5 @@ volumes:
   orders-pg-data:
   cart-mongo-data:
   pgadmin:
+  libs-dist:
+  libs-modules:

@@ -1,13 +1,15 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { PaginatedResult, PaginationOptions, SortOrder } from './utils/types';
-import { UserResponseDto } from './dto/user-response.dto';
-import { plainToInstance } from 'class-transformer';
-
+import {
+  CreateUserDto,
+  PaginatedResult,
+  PaginationOptions,
+  SortOrder,
+  UpdateUserDto,
+  UserResponseDto,
+} from '@ecommerce/types';
 @Injectable()
 export class UsersService {
   constructor(
@@ -19,9 +21,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     const user = this.userRepository.create(createUserDto);
     const saved = await this.userRepository.save(user);
-    return plainToInstance(UserResponseDto, saved, {
-      excludeExtraneousValues: true,
-    });
+    return saved.toResponseDto();
   }
 
   async findAll(
@@ -34,9 +34,7 @@ export class UsersService {
       skip: (page - 1) * limit,
       take: limit,
     });
-    const data = plainToInstance(UserResponseDto, users, {
-      excludeExtraneousValues: true,
-    });
+    const data = users.map((user) => user.toResponseDto()); //plaintoinstance hata veriyordu buna dondum
     return {
       data,
       total,
@@ -54,9 +52,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
-    return plainToInstance(UserResponseDto, user, {
-      excludeExtraneousValues: true,
-    });
+    return user.toResponseDto();
   }
 
   async update(
@@ -71,9 +67,7 @@ export class UsersService {
     const updated = Object.assign(user, updateUserDto);
     await this.userRepository.save(updated);
 
-    return plainToInstance(UserResponseDto, updated, {
-      excludeExtraneousValues: true,
-    });
+    return updated.toResponseDto();
   }
 
   async remove(id: number): Promise<{ message: string }> {

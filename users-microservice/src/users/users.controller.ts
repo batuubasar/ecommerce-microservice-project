@@ -1,14 +1,14 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import {
+  CreateUserDto,
   PaginatedResult,
   PaginationOptions,
+  UpdateUserDto,
   USER_PATTERNS,
-} from './utils/types';
-import { UserResponseDto } from './dto/user-response.dto';
+  UserResponseDto,
+} from '@ecommerce/types';
 
 @Controller()
 export class UsersController {

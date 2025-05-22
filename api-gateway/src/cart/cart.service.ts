@@ -1,7 +1,6 @@
+import { AddToCartDto, CART_PATTERNS, UpdateCartDto } from '@ecommerce/types';
 import { Inject, Injectable } from '@nestjs/common';
-import { UpdateCartDto } from './dto/update-cart.dto';
 import { ClientProxy } from '@nestjs/microservices';
-import { AddToCartDto } from './dto/create-cart.dto';
 
 @Injectable()
 export class CartService {
@@ -11,22 +10,25 @@ export class CartService {
   ) {}
 
   addToCart(dto: AddToCartDto) {
-    return this.cartClient.send({ cmd: 'addToCart' }, dto);
+    return this.cartClient.send({ cmd: CART_PATTERNS.AddToCart }, dto);
   }
 
   getCart(userId: string) {
-    return this.cartClient.send({ cmd: 'getCart' }, userId);
+    return this.cartClient.send({ cmd: CART_PATTERNS.GetCart }, userId);
   }
 
   updateCart(dto: UpdateCartDto) {
-    return this.cartClient.send({ cmd: 'updateCart' }, dto);
+    return this.cartClient.send({ cmd: CART_PATTERNS.UpdateCart }, dto);
   }
 
   removeItem(userId: string, productId: string) {
-    return this.cartClient.send({ cmd: 'removeItem' }, { userId, productId });
+    return this.cartClient.send(
+      { cmd: CART_PATTERNS.RemoveItem },
+      { userId, productId },
+    );
   }
 
   clearCart(userId: string) {
-    return this.cartClient.send({ cmd: 'clearCart' }, userId);
+    return this.cartClient.send({ cmd: CART_PATTERNS.ClearCart }, userId);
   }
 }

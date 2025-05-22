@@ -1,8 +1,11 @@
+import {
+  CreateProductDto,
+  PaginationOptions,
+  PRODUCT_PATTERNS,
+  UpdateProductDto,
+} from '@ecommerce/types';
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { ClientProxy } from '@nestjs/microservices';
-import { PaginationOptions, PRODUCT_PATTERNS } from 'src/common/utils/types';
 
 @Injectable()
 export class ProductsService {

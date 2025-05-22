@@ -1,4 +1,4 @@
-import { UserRole } from 'src/common/utils/types';
+import { UserRole } from '@ecommerce/types';
 import {
   Column,
   CreateDateColumn,

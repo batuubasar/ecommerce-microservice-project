@@ -1,25 +1,9 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Order } from './Order.entity';
+import { BaseEntity, OrderItemResponseDto } from '@ecommerce/types';
 
 @Entity('order_items')
-export class OrderItem {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-  updatedAt: Date;
-
+export class OrderItem extends BaseEntity {
   @Column({ name: 'product_id', type: 'int' })
   productId: number;
 
@@ -40,6 +24,17 @@ export class OrderItem {
   totalPrice: number;
 
   constructor(dto: Partial<OrderItem>) {
+    super();
     Object.assign(this, { ...dto });
+  }
+
+  toResponseDto(): OrderItemResponseDto {
+    return {
+      id: this.id,
+      productId: this.productId,
+      quantity: this.quantity,
+      price: +this.price,
+      totalPrice: +this.totalPrice,
+    };
   }
 }

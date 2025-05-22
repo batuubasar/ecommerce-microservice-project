@@ -11,12 +11,15 @@ import {
   Put,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { PaginationOptions, UserRole } from 'src/common/utils/types';
+import {
+  CreateOrderDto,
+  PaginationOptions,
+  UpdateOrderDto,
+  UserRole,
+} from '@ecommerce/types';
 
 @Controller('orders')
 export class OrdersController {

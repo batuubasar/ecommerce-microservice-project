@@ -1,14 +1,15 @@
 FROM node:20-alpine
+ 
+WORKDIR /usr/src/app/users-microservice
 
-WORKDIR /app
-
-COPY package*.json ./
-
-#healtycheck için
-RUN apk add --no-cache netcat-openbsd
+COPY ./users-microservice/package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY ./users-microservice ./
+
+RUN apk add --no-cache netcat-openbsd
 
 CMD ["npm", "run", "start:dev"]
+
+

@@ -10,11 +10,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { UpdateCartDto } from './dto/update-cart.dto';
 import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
-import { UserResponseDto } from 'src/users/dto/user-response.dto';
-import { AddToCartDto } from './dto/create-cart.dto';
-
+import { AddToCartDto, UpdateCartDto, UserResponseDto } from '@ecommerce/types';
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}

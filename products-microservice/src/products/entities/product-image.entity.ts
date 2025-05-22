@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Product } from './product.entity';
+import { ProductImageResponseDto } from '@ecommerce/types';
 
 @Entity('product_images')
 export class ProductImage {
@@ -23,4 +24,11 @@ export class ProductImage {
 
   @Column({ type: 'int', default: 0 })
   index: number;
+
+  toResponseDto(): ProductImageResponseDto {
+    return {
+      url: this.url,
+      index: this.index,
+    };
+  }
 }

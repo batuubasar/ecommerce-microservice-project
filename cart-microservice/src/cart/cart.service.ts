@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AddToCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
+
 import { InjectModel } from '@nestjs/mongoose';
 import { Cart, CartDocument } from './schema/cart.schema';
 import { Model } from 'mongoose';
+import { AddToCartDto, UpdateCartDto } from '@ecommerce/types';
 
 @Injectable()
 export class CartService {

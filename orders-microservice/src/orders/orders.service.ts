@@ -1,13 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './entities/Order.entity';
 import { OrderItem } from './entities/order-item.entity';
-import { OrderResponseDto } from './dto/order-response.dto';
 import { plainToInstance } from 'class-transformer';
-import { PaginatedResult, PaginationOptions, SortOrder } from 'utils/types';
+import {
+  CreateOrderDto,
+  OrderResponseDto,
+  PaginatedResult,
+  PaginationOptions,
+  SortOrder,
+  UpdateOrderDto,
+} from '@ecommerce/types';
 
 @Injectable()
 export class OrdersService {
@@ -35,9 +39,7 @@ export class OrdersService {
 
     const savedItems = await this.itemRepository.save(items);
     savedOrder.items = savedItems;
-    return plainToInstance(OrderResponseDto, savedOrder, {
-      excludeExtraneousValues: true,
-    });
+    return savedOrder.toResponseDto();
   }
 
   async findAll(
@@ -53,10 +55,11 @@ export class OrdersService {
       take: limit,
       order: { [sort]: order },
     });
+
+    const data = orders.map((order) => order.toResponseDto());
+
     return {
-      data: plainToInstance(OrderResponseDto, orders, {
-        excludeExtraneousValues: true,
-      }),
+      data,
       total,
       page,
       limit,
@@ -69,9 +72,7 @@ export class OrdersService {
       relations: ['items'],
     });
     if (!order) throw new NotFoundException(`Order ${id} not found`);
-    return plainToInstance(OrderResponseDto, order, {
-      excludeExtraneousValues: true,
-    });
+    return order.toResponseDto();
   }
 
   async update(id: number, dto: UpdateOrderDto): Promise<OrderResponseDto> {
@@ -102,9 +103,10 @@ export class OrdersService {
       where: { id: updated.id },
       relations: ['items'],
     });
-    return plainToInstance(OrderResponseDto, result, {
-      excludeExtraneousValues: true,
-    });
+    if (!result) {
+      throw new NotFoundException(`Order ${id} not found`);
+    }
+    return result.toResponseDto();
   }
 
   async remove(id: number): Promise<{ message: string }> {
