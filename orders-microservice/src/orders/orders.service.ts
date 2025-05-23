@@ -1,24 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './entities/Order.entity';
 import { OrderItem } from './entities/order-item.entity';
-import { plainToInstance } from 'class-transformer';
 import {
   CreateOrderDto,
+  OrderCreatedEvent,
   OrderResponseDto,
   PaginatedResult,
   PaginationOptions,
   SortOrder,
   UpdateOrderDto,
 } from '@ecommerce/types';
+import { ClientKafka } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class OrdersService {
+export class OrdersService implements OnModuleInit {
   constructor(
     @InjectRepository(Order) private orderRepository: Repository<Order>,
     @InjectRepository(OrderItem) private itemRepository: Repository<OrderItem>,
+    @Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka,
   ) {}
+  async onModuleInit() {
+    await this.kafkaClient.connect();
+  }
 
   async create(dto: CreateOrderDto): Promise<OrderResponseDto> {
     const order = this.orderRepository.create({
@@ -39,6 +50,20 @@ export class OrdersService {
 
     const savedItems = await this.itemRepository.save(items);
     savedOrder.items = savedItems;
+
+    // eslint hatasi vardı sadece await olunca ondan dolayı firstvaluefrom observable'ı promise çevirip hatayı engelliyor diye kullandım
+    await firstValueFrom(
+      this.kafkaClient.emit<OrderCreatedEvent>('order_created', {
+        orderId: savedOrder.id,
+        userId: savedOrder.userId,
+        totalPrice: savedOrder.totalPrice,
+        items: savedItems.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      }),
+    );
+
     return savedOrder.toResponseDto();
   }
 

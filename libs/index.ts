@@ -34,3 +34,6 @@ export * from './cart/dto/update-cart.dto'
 //auth 
 export * from './auth/types'
 export * from './auth/dto/login.dto'
+
+//events
+export * from './events/order-created.event'
