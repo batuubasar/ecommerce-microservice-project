@@ -9,16 +9,16 @@ import { Repository } from 'typeorm';
 import { Order } from './entities/Order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import {
-  CreateOrderDto,
   OrderCreatedEvent,
   OrderResponseDto,
   PaginatedResult,
   PaginationOptions,
   SortOrder,
-  UpdateOrderDto,
 } from '@ecommerce/types';
 import { ClientKafka } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrdersService implements OnModuleInit {

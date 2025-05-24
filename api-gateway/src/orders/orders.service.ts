@@ -1,11 +1,8 @@
-import {
-  CreateOrderDto,
-  ORDER_PATTERNS,
-  PaginationOptions,
-  UpdateOrderDto,
-} from '@ecommerce/types';
+import { ORDER_PATTERNS, PaginationOptions } from '@ecommerce/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrdersService {

@@ -69,6 +69,8 @@ services:
         condition: service_healthy
       libs:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3023"]
       interval: 10s
@@ -241,6 +243,28 @@ services:
       timeout: 5s
       retries: 5
 
+  notifications-microservice:
+    build:
+      context: .
+      dockerfile: ./notifications-microservice/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - ecommerce-app-microservice-network
+    env_file:
+      - ./notifications-microservice/.env
+    volumes:
+      - ./notifications-microservice:/usr/src/app/notifications-microservice
+      - /usr/src/app/notifications-microservice/node_modules
+      - libs-dist:/usr/src/app/libs/dist
+      - libs-modules:/usr/src/app/libs/node_modules
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Notification Service Healthy')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
@@ -283,6 +307,10 @@ services:
       cart-microservice:
         condition: service_healthy
       libs:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      notifications-microservice:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3000"]

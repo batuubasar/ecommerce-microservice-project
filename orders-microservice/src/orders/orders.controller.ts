@@ -1,20 +1,21 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { OrdersService } from './orders.service';
-import {
-  CreateOrderDto,
-  ORDER_PATTERNS,
-  PaginationOptions,
-  UpdateOrderDto,
-} from '@ecommerce/types';
+import { ORDER_PATTERNS, PaginationOptions } from '@ecommerce/types';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { OrderItemDto } from './dto/order-item.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller()
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @MessagePattern({ cmd: ORDER_PATTERNS.Create })
-  create(@Payload() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  async create(@Payload() dto: CreateOrderDto) {
+    //libsden cekince orderitem işlemede sorun oluyordu mecbur boyle yaptım
+    console.log('DTO type:', dto.orderItems[0] instanceof OrderItemDto); // false diyorsa sorun var
+
+    return this.ordersService.create(dto);
   }
 
   @MessagePattern({ cmd: ORDER_PATTERNS.FindAll })

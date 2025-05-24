@@ -15,12 +15,9 @@ import { Roles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { CapitalizeNamePipe } from 'src/common/pipes/capitalize-name.pipe';
-import {
-  CreateProductDto,
-  PaginationOptions,
-  UpdateProductDto,
-  UserRole,
-} from '@ecommerce/types';
+import { PaginationOptions, UserRole } from '@ecommerce/types';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {

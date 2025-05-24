@@ -4,13 +4,13 @@ import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { ProductImage } from './entities/product-image.entity';
 import {
-  CreateProductDto,
   PaginatedResult,
   PaginationOptions,
   ProductResponseDto,
   SortOrder,
-  UpdateProductDto,
 } from '@ecommerce/types';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
