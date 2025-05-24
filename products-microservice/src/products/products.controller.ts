@@ -8,6 +8,14 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @MessagePattern({ cmd: PRODUCT_PATTERNS.Decrease })
+  async decreaseStock(
+    @Payload() data: { productId: number; quantity: number },
+  ): Promise<{ status: string }> {
+    await this.productsService.decreaseStock(data.productId, data.quantity);
+    return { status: 'ok' };
+  }
+
   @MessagePattern({ cmd: PRODUCT_PATTERNS.Create })
   create(@Payload() dto: CreateProductDto) {
     return this.productsService.create(dto);

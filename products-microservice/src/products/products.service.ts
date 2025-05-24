@@ -93,4 +93,19 @@ export class ProductsService {
     }
     return { message: `Product with id ${id} deleted successfully` };
   }
+
+  async decreaseStock(productId: number, quantity: number): Promise<void> {
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) throw new NotFoundException(`Product ${productId} not found`);
+    if (product.stock < quantity) {
+      console.warn(
+        `Stok yetersiz! Product ID: ${productId}, Talep: ${quantity}, Mevcut: ${product.stock}`,
+      );
+      return;
+    }
+    product.stock -= quantity;
+    await this.productRepository.save(product);
+  }
 }

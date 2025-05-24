@@ -288,6 +288,31 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  stock-microservice:
+    build:
+      context: .
+      dockerfile: ./stock-microservice/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+      products-microservice:
+        condition: service_healthy
+    env_file:
+      - ./stock-microservice/.env
+    networks:
+      - ecommerce-app-microservice-network
+    volumes:
+      - ./stock-microservice:/usr/src/app/stock-microservice
+      - /usr/src/app/stock-microservice/node_modules
+      - libs-dist:/usr/src/app/libs/dist
+      - libs-modules:/usr/src/app/libs/node_modules
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Stock Service Healthy')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
@@ -337,6 +362,8 @@ services:
       notifications-microservice:
         condition: service_healthy
       shipping-microservice:
+        condition: service_healthy
+      stock-microservice:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3000"]

@@ -5,4 +5,5 @@ export const PRODUCT_PATTERNS = {
   Create: 'Products.Create',
   Update: 'Products.Update',
   Remove: 'Products.Remove',
+  Decrease: 'Products.Decrease',
 };
