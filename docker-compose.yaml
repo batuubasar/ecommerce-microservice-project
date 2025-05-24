@@ -265,6 +265,30 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  shipping-microservice:
+    build:
+      context: .
+      dockerfile: ./shipping-microservice/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    env_file:
+      - ./shipping-microservice/.env
+    networks:
+      - ecommerce-app-microservice-network
+    volumes:
+      - ./shipping-microservice:/usr/src/app/shipping-microservice
+      - /usr/src/app/shipping-microservice/node_modules
+      - libs-dist:/usr/src/app/libs/dist
+      - libs-modules:/usr/src/app/libs/node_modules
+      - shipping-sqlite-data:/usr/src/app/shipping.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Shipping Service Healthy')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
@@ -312,6 +336,8 @@ services:
         condition: service_healthy
       notifications-microservice:
         condition: service_healthy
+      shipping-microservice:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3000"]
       interval: 10s
@@ -324,7 +350,6 @@ services:
       - libs-modules:/usr/src/app/libs/node_modules
     restart: unless-stopped
 
-
 networks:
   ecommerce-app-microservice-network:
     driver: bridge
@@ -335,5 +360,6 @@ volumes:
   orders-pg-data:
   cart-mongo-data:
   pgadmin:
+  shipping-sqlite-data:
   libs-dist:
   libs-modules:
