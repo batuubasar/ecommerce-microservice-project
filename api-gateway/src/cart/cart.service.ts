@@ -1,11 +1,16 @@
-import { AddToCartDto, CART_PATTERNS, UpdateCartDto } from '@ecommerce/types';
+import {
+  AddToCartDto,
+  CART_PATTERNS,
+  MICROSERVICES,
+  UpdateCartDto,
+} from '@ecommerce/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class CartService {
   constructor(
-    @Inject('CART_MICROSERVICE')
+    @Inject(MICROSERVICES.CART.name)
     private readonly cartClient: ClientProxy,
   ) {}
 

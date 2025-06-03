@@ -6,20 +6,19 @@ import { ClientProxy } from '@nestjs/microservices';
 import { LoginDto } from './dto/login.dto';
 import { firstValueFrom } from 'rxjs';
 import { plainToInstance } from 'class-transformer';
+import { MICROSERVICES, USER_PATTERNS } from '@ecommerce/types';
 
 @Injectable()
 export class AppService {
   constructor(
     private jwtService: JwtService,
-    @Inject('USERS_MICROSERVICE') private usersMicroservice: ClientProxy,
+    @Inject(MICROSERVICES.USERS.name) private usersMicroservice: ClientProxy,
   ) {}
 
   async validateUser(email: string, password: string) {
     const user: UserDto = await firstValueFrom(
       this.usersMicroservice.send(
-        {
-          cmd: 'Users.FindByEmail',
-        },
+        { cmd: USER_PATTERNS.FindByEmail },
         { email },
       ),
     );

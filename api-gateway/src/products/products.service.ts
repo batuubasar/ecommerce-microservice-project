@@ -1,4 +1,8 @@
-import { PaginationOptions, PRODUCT_PATTERNS } from '@ecommerce/types';
+import {
+  MICROSERVICES,
+  PaginationOptions,
+  PRODUCT_PATTERNS,
+} from '@ecommerce/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -7,7 +11,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 @Injectable()
 export class ProductsService {
   constructor(
-    @Inject('PRODUCTS_MICROSERVICE')
+    @Inject(MICROSERVICES.PRODUCTS.name)
     private readonly productsMicroservice: ClientProxy,
   ) {}
 

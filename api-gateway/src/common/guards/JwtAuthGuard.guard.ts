@@ -1,3 +1,4 @@
+import { AUTH_PATTERNS, MICROSERVICES } from '@ecommerce/types';
 import {
   CanActivate,
   ExecutionContext,
@@ -10,7 +11,7 @@ import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
-    @Inject('AUTH_MICROSERVICE') private authMicroservice: ClientProxy,
+    @Inject(MICROSERVICES.AUTH.name) private authMicroservice: ClientProxy,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
@@ -20,7 +21,7 @@ export class JwtAuthGuard implements CanActivate {
     const token = authHeader.replace('Bearer ', '');
     try {
       const user = await firstValueFrom(
-        this.authMicroservice.send({ cmd: 'auth.verify' }, token),
+        this.authMicroservice.send({ cmd: AUTH_PATTERNS.Verify }, token),
       );
       req.user = user;
       return true;

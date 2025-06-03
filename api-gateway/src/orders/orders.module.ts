@@ -3,24 +3,25 @@ import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
+import { MICROSERVICES } from '@ecommerce/types';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'ORDERS_MICROSERVICE',
+        name: MICROSERVICES.ORDERS.name,
         transport: Transport.TCP,
         options: {
-          host: 'orders-microservice',
-          port: 3023,
+          host: MICROSERVICES.ORDERS.host,
+          port: MICROSERVICES.ORDERS.port,
         },
       },
       {
-        name: 'AUTH_MICROSERVICE',
+        name: MICROSERVICES.AUTH.name,
         transport: Transport.TCP,
         options: {
-          host: 'auth-microservice',
-          port: 3021,
+          host: MICROSERVICES.AUTH.host,
+          port: MICROSERVICES.AUTH.port,
         },
       },
     ]),

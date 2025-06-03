@@ -2,16 +2,17 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { MICROSERVICES } from '@ecommerce/types';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'AUTH_MICROSERVICE',
+        name: MICROSERVICES.AUTH.name,
         transport: Transport.TCP,
         options: {
-          port: 3021,
-          host: 'auth-microservice',
+          port: MICROSERVICES.AUTH.port,
+          host: MICROSERVICES.AUTH.host,
         },
       },
     ]),

@@ -1,5 +1,6 @@
 import {
   CreateUserDto,
+  MICROSERVICES,
   PaginationOptions,
   UpdateUserDto,
   USER_PATTERNS,
@@ -11,7 +12,7 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('USERS_MICROSERVICE')
+    @Inject(MICROSERVICES.USERS.name)
     private readonly usersMicroservice: ClientProxy,
   ) {}
 

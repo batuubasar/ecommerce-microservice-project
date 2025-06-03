@@ -37,3 +37,6 @@ export * from './auth/dto/login.dto'
 
 //events
 export * from './events/order-created.event'
+
+//microservices
+export * from './common/constants/microservices'

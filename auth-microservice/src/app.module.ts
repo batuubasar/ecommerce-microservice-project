@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MICROSERVICES } from '@ecommerce/types';
 
 @Module({
   imports: [
@@ -20,11 +21,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     ClientsModule.register([
       {
-        name: 'USERS_MICROSERVICE',
+        name: MICROSERVICES.USERS.name,
         transport: Transport.TCP,
         options: {
-          host: 'users-microservice',
-          port: 3020,
+          host: MICROSERVICES.USERS.host,
+          port: MICROSERVICES.USERS.port,
         },
       },
     ]),

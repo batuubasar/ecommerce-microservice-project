@@ -3,24 +3,25 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
+import { MICROSERVICES } from '@ecommerce/types';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'USERS_MICROSERVICE',
+        name: MICROSERVICES.USERS.name,
         transport: Transport.TCP,
         options: {
-          host: 'users-microservice',
-          port: 3020,
+          host: MICROSERVICES.USERS.host,
+          port: MICROSERVICES.USERS.port,
         },
       },
       {
-        name: 'AUTH_MICROSERVICE',
+        name: MICROSERVICES.AUTH.name,
         transport: Transport.TCP,
         options: {
-          host: 'auth-microservice',
-          port: 3021,
+          host: MICROSERVICES.AUTH.host,
+          port: MICROSERVICES.AUTH.port,
         },
       },
     ]),
