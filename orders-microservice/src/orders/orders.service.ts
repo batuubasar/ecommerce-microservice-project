@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Order } from './entities/Order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import {
+  ORDER_EVENTS,
   OrderCreatedEvent,
   OrderResponseDto,
   PaginatedResult,
@@ -47,7 +48,7 @@ export class OrdersService implements OnModuleInit {
 
     // eslint hatasi vardı sadece await olunca ondan dolayı firstvaluefrom observable'ı promise çevirip hatayı engelliyor diye kullandım
     await firstValueFrom(
-      this.kafkaClient.emit<OrderCreatedEvent>('order_created', {
+      this.kafkaClient.emit<OrderCreatedEvent>(ORDER_EVENTS.ORDER_CREATED, {
         orderId: savedOrder.id,
         userId: savedOrder.userId,
         totalPrice: savedOrder.totalPrice,
