@@ -1,12 +1,11 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto, UserResponseDto } from './dto/user-response.dto';
 import { JwtPayload } from './utils/types';
-import { ClientProxy } from '@nestjs/microservices';
-import { LoginDto } from './dto/login.dto';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { plainToInstance } from 'class-transformer';
-import { MICROSERVICES, USER_PATTERNS } from '@ecommerce/types';
+import { LoginDto, MICROSERVICES, USER_PATTERNS } from '@ecommerce/types';
 
 @Injectable()
 export class AppService {
@@ -24,7 +23,10 @@ export class AppService {
     );
 
     if (!user || user.password !== password) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new RpcException({
+        statusCode: 401,
+        message: 'Invalid credentials',
+      });
     }
     return user;
   }
@@ -46,15 +48,59 @@ export class AppService {
       };
     } catch (error) {
       console.error('Login error:', error);
-      throw new UnauthorizedException('Login failed');
+      throw new RpcException({
+        statusCode: 401,
+        message: 'Login failed',
+      });
     }
   }
 
   verify(token: string) {
     try {
-      return this.jwtService.verify(token);
+      const decoded = this.jwtService.verify(token);
+      return {
+        id: decoded.sub,
+        email: decoded.email,
+        role: decoded.role,
+      };
     } catch (e) {
-      throw new UnauthorizedException();
+      throw new RpcException({
+        statusCode: 401,
+        message: 'Invalid or expired token',
+      });
+    }
+  }
+
+  async me(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+
+      const user = await firstValueFrom(
+        this.usersMicroservice.send(
+          { cmd: USER_PATTERNS.FindOne },
+          { id: decoded.sub },
+        ),
+      );
+
+      const responseUser = plainToInstance(UserResponseDto, user, {
+        excludeExtraneousValues: true,
+      });
+
+      const newPayload: JwtPayload = {
+        email: user.email,
+        sub: user.id,
+        role: user.role,
+      };
+
+      return {
+        token: this.jwtService.sign(newPayload),
+        user: responseUser,
+      };
+    } catch (e) {
+      throw new RpcException({
+        statusCode: 401,
+        message: 'Invalid or expired token',
+      });
     }
   }
 }

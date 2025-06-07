@@ -1,5 +1,5 @@
+import { UserRole } from '@ecommerce/types';
 import { Exclude, Expose } from 'class-transformer';
-import { UserRole } from '../utils/types';
 
 @Exclude() //derste kullanmamıştık ama çok fazla alan olunca tek tek dersteki gibi yapmak zor olabilir ileride
 export class UserResponseDto {

@@ -1,10 +1,13 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { OrdersService } from './orders.service';
-import { ORDER_PATTERNS, PaginationOptions } from '@ecommerce/types';
+import {
+  ORDER_PATTERNS,
+  PaginationOptions,
+  UpdateOrderDto,
+} from '@ecommerce/types';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderItemDto } from './dto/order-item.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller()
 export class OrdersController {
@@ -36,5 +39,10 @@ export class OrdersController {
   @MessagePattern({ cmd: ORDER_PATTERNS.Remove })
   remove(@Payload() id: number) {
     return this.ordersService.remove(id);
+  }
+
+  @MessagePattern({ cmd: ORDER_PATTERNS.FindByUserId })
+  findByUser(@Payload() userId: number) {
+    return this.ordersService.findByUserId(userId);
   }
 }

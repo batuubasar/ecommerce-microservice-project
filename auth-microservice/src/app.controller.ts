@@ -16,4 +16,9 @@ export class AppController {
   verify(@Payload() token: string) {
     return this.authService.verify(token);
   }
+
+  @MessagePattern({ cmd: AUTH_PATTERNS.Me })
+  me(@Payload() token: string) {
+    return this.authService.me(token);
+  }
 }

@@ -1,23 +1,41 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { PRODUCT_PATTERNS } from '@ecommerce/types';
+import { MICROSERVICES, PRODUCT_PATTERNS } from '@ecommerce/types';
 
 @Injectable()
 export class StockService {
   constructor(
-    @Inject('PRODUCTS_SERVICE') private readonly productsClient: ClientProxy,
+    @Inject(MICROSERVICES.PRODUCTS.name)
+    private readonly productsClient: ClientProxy,
   ) {}
 
   async decreaseStock(items: { productId: number; quantity: number }[]) {
     for (const item of items) {
       if (item.quantity <= 0) {
-        console.warn(`Stok miktarı hatalı: ${item.productId}`);
+        console.warn(
+          `[StockService] Geçersiz stok miktarı: Product ID ${item.productId}, Quantity: ${item.quantity}`,
+        );
         continue;
       }
-      await firstValueFrom(
-        this.productsClient.send({ cmd: PRODUCT_PATTERNS.Decrease }, item),
-      );
+
+      try {
+        await firstValueFrom(
+          this.productsClient.send({ cmd: PRODUCT_PATTERNS.Decrease }, item),
+        );
+        console.log(
+          `[StockService] Stok düşürüldü: Product ID ${item.productId}, Quantity: ${item.quantity}`,
+        );
+      } catch (error) {
+        console.error(
+          `[StockService] Hata: Stok düşürülemedi | Product ID ${item.productId}`,
+          error?.message || error,
+        );
+        throw new RpcException({
+          statusCode: 500,
+          message: `Stok düşürme işlemi başarısız: Product ID ${item.productId}`,
+        });
+      }
     }
   }
 }

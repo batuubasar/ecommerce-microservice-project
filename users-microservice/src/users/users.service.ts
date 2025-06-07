@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -10,6 +10,7 @@ import {
   UpdateUserDto,
   UserResponseDto,
 } from '@ecommerce/types';
+import { RpcException } from '@nestjs/microservices';
 @Injectable()
 export class UsersService {
   constructor(
@@ -50,7 +51,10 @@ export class UsersService {
   async findOne(id: number): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new RpcException({
+        statusCode: 404,
+        message: `User with id ${id} not found`,
+      });
     }
     return user.toResponseDto();
   }
@@ -61,9 +65,11 @@ export class UsersService {
   ): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new RpcException({
+        statusCode: 404,
+        message: `User with id ${id} not found`,
+      });
     }
-
     const updated = Object.assign(user, updateUserDto);
     await this.userRepository.save(updated);
 
@@ -73,7 +79,10 @@ export class UsersService {
   async remove(id: number): Promise<{ message: string }> {
     const result = await this.userRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new RpcException({
+        statusCode: 404,
+        message: `User with id ${id} not found`,
+      });
     }
     return { message: `User with id ${id} removed successfully` };
   }

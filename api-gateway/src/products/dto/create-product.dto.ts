@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ProductImageDto } from './product-image.dto';
-
+// validator sırasında hata verdiği için ya validator silecektim ya da çoklayacaktım 2 tane oldugundan bunu tercih ettim
 export class CreateProductDto {
   @IsNotEmpty({ message: 'Name is required.' })
   name: string;

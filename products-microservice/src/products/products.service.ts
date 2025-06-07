@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
@@ -8,9 +8,10 @@ import {
   PaginationOptions,
   ProductResponseDto,
   SortOrder,
+  UpdateProductDto,
 } from '@ecommerce/types';
+import { RpcException } from '@nestjs/microservices';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -69,7 +70,10 @@ export class ProductsService {
       where: { id },
     });
     if (!product) {
-      throw new NotFoundException(`Product with id ${id} not found`);
+      throw new RpcException({
+        statusCode: 404,
+        message: `Product with id ${id} not found`,
+      });
     }
     return product.toResponseDto();
   }
@@ -77,7 +81,10 @@ export class ProductsService {
   async update(id: number, dto: UpdateProductDto): Promise<ProductResponseDto> {
     const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
-      throw new NotFoundException(`Product with id ${id} not found`);
+      throw new RpcException({
+        statusCode: 404,
+        message: `Product with id ${id} not found`,
+      });
     }
 
     const updated = Object.assign(product, dto);
@@ -89,7 +96,10 @@ export class ProductsService {
   async remove(id: number): Promise<{ message: string }> {
     const result = await this.productRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(`Product with id ${id} not found`);
+      throw new RpcException({
+        statusCode: 404,
+        message: `Product with id ${id} not found`,
+      });
     }
     return { message: `Product with id ${id} deleted successfully` };
   }
@@ -98,12 +108,20 @@ export class ProductsService {
     const product = await this.productRepository.findOne({
       where: { id: productId },
     });
-    if (!product) throw new NotFoundException(`Product ${productId} not found`);
+    if (!product) {
+      throw new RpcException({
+        statusCode: 404,
+        message: `Product with id ${productId} not found`,
+      });
+    }
     if (product.stock < quantity) {
       console.warn(
         `Stok yetersiz! Product ID: ${productId}, Talep: ${quantity}, Mevcut: ${product.stock}`,
       );
-      return;
+      throw new RpcException({
+        statusCode: 400,
+        message: `Insufficient stock: requested ${quantity}, available ${product.stock}`,
+      });
     }
     product.stock -= quantity;
     await this.productRepository.save(product);

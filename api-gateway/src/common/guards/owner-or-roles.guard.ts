@@ -5,8 +5,9 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RequestWithUser, UserRole } from '../utils/types';
+import { RequestWithUser } from '../utils/types';
 import { ROLES_KEY } from '../../auth/decorator/roles.decorator';
+import { UserRole } from '@ecommerce/types';
 
 @Injectable()
 export class OwnerOrRolesGuard implements CanActivate {

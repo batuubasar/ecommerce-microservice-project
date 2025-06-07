@@ -1,3 +1,4 @@
+import { UserRole } from '@ecommerce/types';
 import {
   CanActivate,
   ExecutionContext,
@@ -5,8 +6,6 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { User } from 'src/users/entities/user.entity';
-import { UserRole } from '../utils/types';
 import { ROLES_KEY } from 'src/auth/decorator/roles.decorator';
 
 @Injectable()
@@ -19,9 +18,7 @@ export class RolesGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
     if (!requiredRoles) return true;
-    const { user } = context
-      .switchToHttp()
-      .getRequest<Request & { user: User }>();
+    const { user } = context.switchToHttp().getRequest<Request & { user }>();
     if (!requiredRoles.includes(user.role)) {
       throw new ForbiddenException('Yetkiniz bulunmamaktadır.');
     }

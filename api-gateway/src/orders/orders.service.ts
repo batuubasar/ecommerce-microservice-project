@@ -2,11 +2,11 @@ import {
   MICROSERVICES,
   ORDER_PATTERNS,
   PaginationOptions,
+  UpdateOrderDto,
 } from '@ecommerce/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -39,5 +39,12 @@ export class OrdersService {
 
   remove(id: number) {
     return this.ordersMicroservice.send({ cmd: ORDER_PATTERNS.Remove }, id);
+  }
+
+  findByUserId(userId: number) {
+    return this.ordersMicroservice.send(
+      { cmd: ORDER_PATTERNS.FindByUserId },
+      userId,
+    );
   }
 }

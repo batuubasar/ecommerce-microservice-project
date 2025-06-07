@@ -1,3 +1,4 @@
+import { UserRole } from '@ecommerce/types';
 import { Request } from 'express';
 export interface RequestWithUser extends Request {
   user: {
@@ -8,11 +9,4 @@ export interface RequestWithUser extends Request {
   params: {
     id: string;
   };
-}
-export enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  SELLER = 'SELLER',
-  GUEST = 'GUEST',
 }

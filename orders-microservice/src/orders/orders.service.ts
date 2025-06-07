@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './entities/Order.entity';
@@ -14,12 +9,11 @@ import {
   PaginatedResult,
   PaginationOptions,
   SortOrder,
+  UpdateOrderDto,
 } from '@ecommerce/types';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientKafka, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-
 @Injectable()
 export class OrdersService implements OnModuleInit {
   constructor(
@@ -96,7 +90,12 @@ export class OrdersService implements OnModuleInit {
       where: { id },
       relations: ['items'],
     });
-    if (!order) throw new NotFoundException(`Order ${id} not found`);
+    if (!order) {
+      throw new RpcException({
+        statusCode: 404,
+        message: `Order ${id} not found`,
+      });
+    }
     return order.toResponseDto();
   }
 
@@ -105,8 +104,12 @@ export class OrdersService implements OnModuleInit {
       where: { id },
       relations: ['items'],
     });
-    if (!order) throw new NotFoundException(`Order ${id} not found`);
-
+    if (!order) {
+      throw new RpcException({
+        statusCode: 404,
+        message: `Order ${id} not found`,
+      });
+    }
     if (dto.totalPrice) order.totalPrice = dto.totalPrice;
 
     if (dto.orderItems) {
@@ -129,15 +132,32 @@ export class OrdersService implements OnModuleInit {
       relations: ['items'],
     });
     if (!result) {
-      throw new NotFoundException(`Order ${id} not found`);
+      throw new RpcException({
+        statusCode: 404,
+        message: `Order ${id} not found after update`,
+      });
     }
     return result.toResponseDto();
   }
 
   async remove(id: number): Promise<{ message: string }> {
     const deleted = await this.orderRepository.delete(id);
-    if (deleted.affected === 0)
-      throw new NotFoundException(`Order ${id} not found`);
+    if (deleted.affected === 0) {
+      throw new RpcException({
+        statusCode: 404,
+        message: `Order ${id} not found`,
+      });
+    }
     return { message: `Order ${id} deleted successfully` };
+  }
+
+  async findByUserId(userId: number): Promise<OrderResponseDto[]> {
+    const orders = await this.orderRepository.find({
+      where: { userId },
+      relations: ['items'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return orders.map((order) => order.toResponseDto());
   }
 }

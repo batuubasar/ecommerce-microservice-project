@@ -4,6 +4,8 @@ import { OrdersController } from './orders.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
 import { MICROSERVICES } from '@ecommerce/types';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { OwnerOfOrderGuard } from 'src/common/guards/owner-of-order.guard';
 
 @Module({
   imports: [
@@ -27,6 +29,6 @@ import { MICROSERVICES } from '@ecommerce/types';
     ]),
   ],
   controllers: [OrdersController],
-  providers: [OrdersService, JwtAuthGuard],
+  providers: [OrdersService, JwtAuthGuard, RolesGuard, OwnerOfOrderGuard],
 })
 export class OrdersModule {}

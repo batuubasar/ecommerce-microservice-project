@@ -4,5 +4,6 @@ export const ORDER_PATTERNS = {
   Create: 'Orders.Create',
   Update: 'Orders.Update',
   Remove: 'Orders.Remove',
+  FindByUserId: 'Orders.FindByUserId',
 };
 

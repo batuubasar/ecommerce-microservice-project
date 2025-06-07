@@ -12,40 +12,36 @@ import {
 import { CartService } from './cart.service';
 import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
 import { AddToCartDto, UpdateCartDto, UserResponseDto } from '@ecommerce/types';
+@UseGuards(JwtAuthGuard) // tek tek her endpointe yapmak yerine burada tanımladım
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @Post('add')
-  @UseGuards(JwtAuthGuard)
   add(@Body() dto: AddToCartDto, @Req() req) {
     dto.userId = String((req.user as UserResponseDto).id);
     return this.cartService.addToCart(dto);
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   get(@Req() req) {
     const userId = String((req.user as UserResponseDto).id);
     return this.cartService.getCart(userId);
   }
 
   @Put('update')
-  @UseGuards(JwtAuthGuard)
   update(@Body() dto: UpdateCartDto, @Req() req) {
     dto.userId = String((req.user as UserResponseDto).id);
     return this.cartService.updateCart(dto);
   }
 
   @Delete('clear')
-  @UseGuards(JwtAuthGuard)
   clear(@Req() req) {
     const userId = String((req.user as UserResponseDto).id);
     return this.cartService.clearCart(userId);
   }
 
   @Delete(':productId')
-  @UseGuards(JwtAuthGuard)
   remove(@Param('productId') productId: string, @Req() req) {
     const userId = String((req.user as UserResponseDto).id);
     return this.cartService.removeItem(userId, productId);

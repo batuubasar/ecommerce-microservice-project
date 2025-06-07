@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { InjectModel } from '@nestjs/mongoose';
 import { Cart, CartDocument } from './schema/cart.schema';
 import { Model } from 'mongoose';
 import { AddToCartDto, UpdateCartDto } from '@ecommerce/types';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class CartService {
@@ -49,11 +50,19 @@ export class CartService {
 
   async updateCart(dto: UpdateCartDto) {
     const cart = await this.cartModel.findOne({ userId: dto.userId });
-    if (!cart) throw new NotFoundException('Cart not found');
-
+    if (!cart) {
+      throw new RpcException({
+        statusCode: 404,
+        message: 'Cart not found',
+      });
+    }
     const item = cart.items.find((item) => item.productId === dto.productId);
-    if (!item) throw new NotFoundException('Product not found in cart');
-
+    if (!item) {
+      throw new RpcException({
+        statusCode: 404,
+        message: 'Product not found in cart',
+      });
+    }
     item.quantity = dto.quantity ?? item.quantity;
     item.price = dto.price ?? item.price;
 
@@ -62,8 +71,12 @@ export class CartService {
 
   async removeFromCart(userId: string, productId: string) {
     const cart = await this.cartModel.findOne({ userId });
-    if (!cart) throw new NotFoundException('Cart not found');
-
+    if (!cart) {
+      throw new RpcException({
+        statusCode: 404,
+        message: 'Cart not found',
+      });
+    }
     cart.items = cart.items.filter((item) => item.productId !== productId);
     return cart.save();
   }

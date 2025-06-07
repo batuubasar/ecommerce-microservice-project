@@ -1,13 +1,7 @@
+import { UserRole } from '@ecommerce/types';
+
 export type JwtPayload = {
   sub: number;
   email: string;
   role: UserRole;
 };
-
-export enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  SELLER = 'SELLER',
-  GUEST = 'GUEST',
-}
