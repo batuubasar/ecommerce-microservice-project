@@ -448,6 +448,32 @@
 					"response": []
 				},
 				{
+					"name": "getMyOrders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/orders/my-orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"orders",
+								"my-orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "createOrder",
 					"request": {
 						"method": "POST",
@@ -460,7 +486,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"userId\":11,\r\n  \"orderItems\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 2,\r\n      \"unitPrice\": 299.90,\r\n      \"totalPrice\": 599.8\r\n    },\r\n    {\r\n      \"productId\": 2,\r\n      \"quantity\": 1,\r\n      \"unitPrice\": 1299.90,\r\n      \"totalPrice\": 1299.90\r\n    }\r\n  ],\r\n  \"totalPrice\": 1899.7\r\n}\r\n",
+							"raw": "{\r\n  \"userId\":5,\r\n  \"orderItems\": [\r\n    {\r\n      \"productId\": 1,\r\n      \"quantity\": 2,\r\n      \"unitPrice\": 299.90,\r\n      \"totalPrice\": 599.8\r\n    },\r\n    {\r\n      \"productId\": 2,\r\n      \"quantity\": 1,\r\n      \"unitPrice\": 1299.90,\r\n      \"totalPrice\": 1299.90\r\n    }\r\n  ],\r\n  \"totalPrice\": 1899.7\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -555,7 +581,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"batuhan@example.com\",\r\n    \"password\": \"Batuhan123*\"\r\n}",
+							"raw": "{\r\n    \"email\": \"sena.ekinci@site.com\",\r\n    \"password\": \"Sell123!\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -571,6 +597,34 @@
 							"path": [
 								"auth",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getMe",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/auth/me",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"me"
 							]
 						}
 					},
