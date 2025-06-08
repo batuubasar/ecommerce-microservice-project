@@ -159,8 +159,8 @@ docker compose down
 ### Orders Microservice
 ![Orders](./screenshots/order.png)
 
-### pgAdmin
-![pgAdmin](./screenshots/pg.png)
+### PG
+![PG](./screenshots/pg.png)
 
 ### Products Microservice
 ![Products](./screenshots/product.png)
