@@ -10,7 +10,7 @@ Sistem, her biri belirli bir işlevi üstlenen bağımsız mikroservislerden olu
 - **API Gateway:** HTTP isteklerini alır ve ilgili mikroservislere yönlendirir.
 - **Users Microservice:** Kullanıcı CRUD işlemleri ve rol bazlı erişim.
 - **Auth Microservice:** JWT tabanlı kimlik doğrulama ve yetkilendirme.
-- **Products Microservice:** Ürün CRUD, arama, sıralama, cache.
+- **Products Microservice:** Ürün CRUD, arama, sıralama, cache, elasticsearch.
 - **Orders Microservice:** Sipariş işlemleri, Kafka ile event yayını.
 - **Cart Microservice:** Kullanıcı sepet yönetimi (MongoDB).
 - **Notifications Microservice:** Sipariş sonrası e-posta bildirimi.
@@ -26,6 +26,7 @@ Sistem, her biri belirli bir işlevi üstlenen bağımsız mikroservislerden olu
 - **PostgreSQL**, **SQLite**, **TypeORM** – Veritabanı ve ORM
 - **MongoDB**, **Mongoose** – NoSQL veritabanı
 - **Redis** – Cache ve Rate Limiting
+- **ElasticSearch** – Ürün arama işlemleri
 - **JWT** – Kimlik doğrulama
 - **Apache Kafka** – Event-driven mesajlaşma
 - **Docker & Docker Compose** – Container yönetimi
@@ -93,9 +94,11 @@ docker compose down
 - Global interceptor ile standart response yapısı
 - Global exception filter ile merkezi hata yönetimi
 - Redis tabanlı önbellekleme (cache)
+- Elasticsearch için ProductSearchController ve ProductSearchService
 - Mikroservislerle TCP üzerinden haberleşme
 - RpcException handling ile sağlam hata yönetimi
 - DTO transformasyon ve request validation
+
 
 ### Users Microservice (Port: 3020)
 - PostgreSQL ile kullanıcı yönetimi
@@ -111,6 +114,7 @@ docker compose down
 - Arama, sıralama, pagination
 - Stok azaltma, seller bazlı listeleme
 - Redis ile ürün detayı ve liste cache işlemleri
+- Elasticsearch için ElasticsearchSyncService ve /products/sync-to-elastic endpointi
 
 ### Orders Microservice (Port: 3023)
 - Sipariş oluşturma, güncelleme, listeleme, kullanıcı bazlı siparişleri
@@ -144,6 +148,9 @@ docker compose down
 ### Genel Görünüm
 ![Giriş Sayfası](./screenshots/1.png)
 
+### Genel Görünüm - 2 (ram sıkıntısından dolayı gerekli containerlerın çalışmış hali)
+![Giriş Sayfası](./screenshots/dockerps.png)
+
 ### API Gateway
 ![API Gateway](./screenshots/api.png)
 
@@ -176,6 +183,10 @@ docker compose down
 
 ### ZooKeeper
 ![ZooKeeper](./screenshots/zoo.png)
+
+### ElasticSearch
+![Elastic](./screenshots/elastic.png)
+
 
 ---
 

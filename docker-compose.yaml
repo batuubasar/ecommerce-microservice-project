@@ -44,6 +44,8 @@ services:
         condition: service_healthy
       libs:
         condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3022"]
       interval: 10s
@@ -312,7 +314,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.1
+    container_name: elasticsearch
+    environment:
+    - discovery.type=single-node
+    - xpack.security.enabled=false
+    - xpack.security.transport.ssl.enabled=false
+    - xpack.security.http.ssl.enabled=false
+    - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+    - "9200:9200"
+    volumes:
+    - esdata:/usr/share/elasticsearch/data
+    networks:
+    - ecommerce-app-microservice-network
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   redis:
     image: redis:7
     container_name: redis
@@ -378,6 +400,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3000"]
       interval: 10s
@@ -403,3 +427,4 @@ volumes:
   shipping-sqlite-data:
   libs-dist:
   libs-modules:
+  esdata:

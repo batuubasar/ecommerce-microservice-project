@@ -210,6 +210,34 @@
 					"response": []
 				},
 				{
+					"name": "sync-to-elastic",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/products/sync-to-elastic",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products",
+								"sync-to-elastic"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "createProductWithPipe",
 					"request": {
 						"auth": {
@@ -312,6 +340,40 @@
 					"response": []
 				},
 				{
+					"name": "elasticSearch",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/products/search?q=Bluetooth",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"products",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "Bluetooth"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "deleteProduct",
 					"request": {
 						"auth": {
@@ -405,7 +467,13 @@
 					"name": "getAllOrders",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer{{Token}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "http://localhost:3000/orders/all",
 							"protocol": "http",

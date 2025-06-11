@@ -6,4 +6,5 @@ export const PRODUCT_PATTERNS = {
   Update: 'Products.Update',
   Remove: 'Products.Remove',
   Decrease: 'Products.Decrease',
+  BulkIndexAll: 'bulk_index_all',
 };

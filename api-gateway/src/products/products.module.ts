@@ -6,6 +6,9 @@ import { JwtAuthGuard } from 'src/common/guards/JwtAuthGuard.guard';
 import { MICROSERVICES } from '@ecommerce/types';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { OwnerOfProductGuard } from 'src/common/guards/owner-of-product.guard';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
+import { ProductSearchController } from './product-search.controller';
+import { ProductSearchService } from './product-search.service';
 
 @Module({
   imports: [
@@ -27,8 +30,15 @@ import { OwnerOfProductGuard } from 'src/common/guards/owner-of-product.guard';
         },
       },
     ]),
+    ElasticsearchModule.register({ node: 'http://elasticsearch:9200' }),
   ],
-  controllers: [ProductsController],
-  providers: [ProductsService, JwtAuthGuard, RolesGuard, OwnerOfProductGuard],
+  controllers: [ProductSearchController, ProductsController],
+  providers: [
+    ProductSearchService,
+    ProductsService,
+    JwtAuthGuard,
+    RolesGuard,
+    OwnerOfProductGuard,
+  ],
 })
 export class ProductsModule {}

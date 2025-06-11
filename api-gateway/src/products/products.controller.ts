@@ -63,4 +63,9 @@ export class ProductsController {
   findBySeller(@Param('sellerId', ParseIntPipe) sellerId: number) {
     return this.productsService.findBySeller(sellerId);
   }
+
+  @Post('sync-to-elastic')
+  async syncToElastic() {
+    return this.productsService.syncToElastic();
+  }
 }

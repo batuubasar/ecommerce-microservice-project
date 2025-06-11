@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
@@ -12,11 +12,13 @@ import {
 } from '@ecommerce/types';
 import { RpcException } from '@nestjs/microservices';
 import { CreateProductDto } from './dto/create-product.dto';
+import { ElasticsearchSyncService } from './elasticsearch-sync.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product) private productRepository: Repository<Product>,
+    @Inject() private readonly esSyncService: ElasticsearchSyncService,
   ) {}
 
   async create(dto: CreateProductDto): Promise<ProductResponseDto> {
@@ -33,7 +35,7 @@ export class ProductsService {
     });
 
     const saved = await this.productRepository.save(product);
-
+    await this.esSyncService.indexProduct(saved);
     return saved.toResponseDto();
   }
 
@@ -89,7 +91,7 @@ export class ProductsService {
 
     const updated = Object.assign(product, dto);
     const saved = await this.productRepository.save(updated);
-
+    await this.esSyncService.indexProduct(saved);
     return saved.toResponseDto();
   }
 
@@ -101,6 +103,7 @@ export class ProductsService {
         message: `Product with id ${id} not found`,
       });
     }
+    await this.esSyncService.removeProduct(id);
     return { message: `Product with id ${id} deleted successfully` };
   }
 
@@ -125,5 +128,17 @@ export class ProductsService {
     }
     product.stock -= quantity;
     await this.productRepository.save(product);
+  }
+
+  async bulkIndexAllProductsToElastic(): Promise<{ indexed: number }> {
+    const products = await this.productRepository.find({
+      relations: ['images'],
+    });
+
+    for (const product of products) {
+      await this.esSyncService.indexProduct(product);
+    }
+
+    return { indexed: products.length };
   }
 }

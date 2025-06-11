@@ -94,4 +94,13 @@ export class ProductsService {
       ),
     );
   }
+
+  async syncToElastic() {
+    return await firstValueFrom(
+      this.productsMicroservice.send(
+        { cmd: PRODUCT_PATTERNS.BulkIndexAll },
+        {},
+      ),
+    );
+  }
 }

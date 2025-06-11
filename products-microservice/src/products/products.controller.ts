@@ -50,4 +50,9 @@ export class ProductsController {
   remove(@Payload() id: number) {
     return this.productsService.remove(id);
   }
+
+  @MessagePattern({ cmd: PRODUCT_PATTERNS.BulkIndexAll })
+  async bulkIndexAll() {
+    return this.productsService.bulkIndexAllProductsToElastic();
+  }
 }
