@@ -1,4 +1,4 @@
-#  E-Commerce Microservices Application
+#  E-Commerce Microservices Architecture
 
 Bu proje, **NestJS** kullanılarak geliştirilen, modüler, ölçeklenebilir ve event-driven mimariye sahip bir e-ticaret sistemidir.
 ---
